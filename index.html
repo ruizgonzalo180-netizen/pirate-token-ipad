@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-panel-version="13"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<html lang="en" data-panel-version="14"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="app.webmanifest">
 <script>
 (() => {
@@ -165,7 +165,6 @@ footer{flex:none;padding:6px 12px max(10px,env(safe-area-inset-bottom));backgrou
 .pixel-trail:after{left:68%;width:.22cqw;animation-delay:.13s}
 @keyframes scan-column{0%{opacity:0;transform:translateY(-90%)}30%{opacity:.96}100%{opacity:0;transform:translateY(50%)}}
 
-.chest-replay{border-radius:11px;background:#ffffff12;color:#f1e7d8;font-size:14px;padding:10px 14px;min-height:44px}
 .game-layer .updated-mode{background:#e7d1a2;color:#322514;font-weight:850;font-size:1.18cqw}
 .game-layer .updated-sprite{background:linear-gradient(120deg,#e6d0ff,#b690da,#ffe5b2);display:flex;align-items:center;justify-content:center;gap:.6cqw;padding:.32cqw .5cqw;color:#26183a;font-size:1.35cqw}
 .updated-sprite img{max-height:85%;max-width:30%;object-fit:contain;border-radius:.35cqw}
@@ -1041,15 +1040,7 @@ async function openChest(i,btn,card,choices){
  canvas.setAttribute('aria-label','The pirate token rises from the chest');
  card.querySelector('.reward-scene').append(canvas);
  const go=make('button','open-game','Open Fortnite'),actions=make('div','reward-actions');
- const replay=make('button','chest-replay','Replay opening');
- replay.hidden=true;replay.onclick=()=>{
-   if(phase!=='won')return;
-   canvas.dispatchEvent(new Event('dispose'));canvas.remove();actions.remove();
-   card.querySelector('.chest-token')?.remove();card.classList.remove('revealing');
-   for(const item of choices.children){item.disabled=false;item.classList.remove('open','dim');item.querySelector('.chest-art').style.removeProperty('background-position');}
-   void choices.offsetWidth;phase='choosing';openChest(i,btn,card,choices);
- };
- go.onclick=launch;go.hidden=true;actions.append(replay,go);card.append(actions);scrollEnd();
+ go.onclick=launch;go.hidden=true;actions.append(go);card.append(actions);scrollEnd();
  const start=performance.now()+(reduced?0:650);
  revealPirateAccess(canvas,btn.querySelector('.chest-rig'),start).catch(()=>{
    if(!canvas.isConnected)return;
@@ -1059,7 +1050,7 @@ async function openChest(i,btn,card,choices){
  await delay(reduced?120:950);if(version!==chatVersion)return;
  title.textContent='Chest '+i+' opened';
  await delay(reduced?130:1750);if(version!==chatVersion)return;
- phase='won';go.hidden=false;replay.hidden=false;scrollEnd();
+ phase='won';go.hidden=false;scrollEnd();
 }
 function hasPirateToken(){return phase==='opening'||phase==='won';}
 async function launch(){
