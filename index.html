@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-panel-version="11"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<html lang="en" data-panel-version="11.1"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,interactive-widget=resizes-content"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link rel="manifest" href="app.webmanifest">
 <script>
 (() => {
@@ -290,7 +290,7 @@ html,body{overscroll-behavior:none;background:#fff}
 html[data-screen="home"],html[data-screen="home"] body{background:#0c2554}
 html[data-screen="boot"],html[data-screen="boot"] body{background:#181719}
 html[data-screen="game"],html[data-screen="game"] body{background:#162a36}
-#app{position:absolute;left:0;top:0;width:var(--view-w,100%);height:var(--view-h,100dvh);overflow:hidden}
+#app{position:absolute;left:0;top:0;width:var(--view-w,100%);max-width:100%;height:var(--view-h,100dvh);overflow:hidden}
 #chat>.status,#tiktok>.status{display:none}
 .home-wallpaper-top{display:inline}
 .avatar-options{display:grid;place-items:center;background:none;padding:0;width:40px;height:44px;flex:none}
@@ -819,9 +819,11 @@ const viewport = window.visualViewport;
 let layoutFrame = 0;
 function fitViewport() {
   layoutFrame = 0;
-  if (viewport && Math.abs(viewport.scale - 1) > .02) return;
-  const width = viewport?.width || document.documentElement.clientWidth;
-  const height = viewport?.height || window.innerHeight;
+  if (viewport && viewport.scale > 1.02) return;
+  const layoutWidth = document.documentElement.clientWidth;
+  const width = Math.min(viewport?.width || layoutWidth, layoutWidth);
+  // During a rotation WebKit can briefly report the old, scaled layout.
+  const height = viewport && viewport.scale >= .98 ? viewport.height : document.documentElement.clientHeight;
   app.style.setProperty('--view-w', width + 'px');
   app.style.setProperty('--view-h', height + 'px');
   app.style.left = (viewport?.pageLeft || 0) + 'px';
@@ -830,7 +832,6 @@ function fitViewport() {
   app.classList.toggle('portrait-game', rotated);
   const gameWidth = rotated ? height : width;
   const gameHeight = rotated ? width : height;
-  // Use the small recorded side margins before extending the scene vertically.
   const ratio = $('stage').classList.contains('tablet-frame') ? 2266 / 1488 : 16 / 9;
   const artWidth = Math.min(gameWidth, gameHeight * ratio);
   app.style.setProperty('--game-w', gameWidth + 'px');
